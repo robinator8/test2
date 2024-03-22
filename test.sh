@@ -3,31 +3,25 @@
 # Placeholder Lorem Ipsum text
 LOREM_IPSUM="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
 
-# Function to generate a filename based on sequence number and desired length
-generate_filename() {
-  seq=$(printf "%02d" $1) # Ensure the sequence number is two digits
-  base_pattern="file-${seq}"
-  filename=$base_pattern
-  desired_length=$2
-  while [ ${#filename} -lt $desired_length ]; do
-    filename+="$base_pattern"
-  done
-  # Trim the filename to the exact desired length, adding .txt extension
-  echo "${filename:0:($desired_length-4)}.txt"
-}
-
 # Checkout main branch
 git checkout main
 
-# Filename length starts at 32 and increases by 32 each iteration, up to 128
-for length in {32..128..32}; do
+# Loop to create files with names increasing in length by 32 characters, starting at 32, up to 128 characters.
+for length in 32 64 96 128; do
   branch_name="files-${length}-chars"
   # Create and checkout new branch named according to file length
   git checkout -b "$branch_name"
 
   # Generate 100 files
-  for i in $(seq -w 0 99); do # Sequence numbers 00 to 99
-    filename=$(generate_filename $i $length)
+  for i in $(seq -w 0 99); do
+    seq=$(printf "%02d" $i) # Format sequence number with leading zeros
+    base_pattern="file-${seq}"
+    filename=$base_pattern
+    while [ ${#filename} -lt $(($length-4)) ]; do
+      filename+="$base_pattern"
+    done
+    # Trim to the desired length and add .txt extension
+    filename="${filename:0:$(($length-4))}.txt"
     echo "$LOREM_IPSUM" > "$filename"
   done
 
