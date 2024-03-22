@@ -6,17 +6,19 @@ LOREM_IPSUM="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
 # Checkout main branch
 git checkout main
 
-# Loop to create files with names increasing in length by 32 characters, starting at 32, up to 128 characters.
-for length in 32 64 96 128; do
-  branch_name="files-${length}-chars"
-  # Create and checkout new branch named according to file length
+# Loop to create a varying number of files (95 to 100)
+for num_files in {95..100}; do
+  branch_name="files-${num_files}"
+  # Create and checkout new branch named according to the number of files
   git checkout -b "$branch_name"
 
-  # Generate 100 files
-  for i in $(seq -w 0 99); do
-    seq=$(printf "%02d" $i) # Format sequence number with leading zeros
+  # Generate files according to the specified count
+  for i in $(seq 0 $(($num_files - 1))); do
+    # Format sequence number with leading zeros, avoiding octal interpretation
+    seq=$(printf "%02d" $i)
     base_pattern="file-${seq}"
     filename=$base_pattern
+    length=80 # Set filename length to 80 characters
     while [ ${#filename} -lt $(($length-4)) ]; do
       filename+="$base_pattern"
     done
@@ -27,7 +29,7 @@ for length in 32 64 96 128; do
 
   # Add, commit, and push the changes
   git add .
-  git commit -m "Added 100 files with names of $length characters"
+  git commit -m "Added $num_files files with names of 80 characters"
   git push -u origin "$branch_name"
 
   # Checkout main to prepare for the next iteration
