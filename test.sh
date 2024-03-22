@@ -5,43 +5,34 @@ LOREM_IPSUM="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
 
 # Function to generate a filename based on sequence number
 generate_filename() {
-  seq=$1
-  # Create the repeating sequence pattern
-  pattern=$(printf '%s-' file; printf "%.s$seq" {1..32})
-  # Truncate to 32 characters and add .txt extension
-  echo "${pattern:0:28}.txt"
-}
-
-# Assert the filename length is 32 characters
-assert_filename_length() {
-  filename=$1
-  if [ ${#filename} -ne 32 ]; then
-    echo "Error: Filename $filename is not 32 characters long."
-    exit 1
-  fi
+  seq=$(printf "%02d" $1) # Ensure the sequence number is two digits
+  pattern="file-${seq}"
+  while [ ${#pattern} -lt 28 ]; do # Ensure the total length is up to 28 characters
+    pattern+="${seq}"
+  done
+  echo "${pattern:0:28}.txt" # Trim and add .txt extension to maintain 32 chars overall
 }
 
 # Checkout main branch
 git checkout main
 
 # Loop from 10 to 100, skipping by 10
-for x in {10..100..10}; do
+for x in $(seq 10 10 100); do
+  branch_name="${x}-files"
   # Create and checkout new branch named x-files
-  git checkout -b ${x}-files
+  git checkout -b "$branch_name"
 
   # Generate x files
   for ((i=1; i<=x; i++)); do
     filename=$(generate_filename $i)
-    assert_filename_length "$filename"
     echo "$LOREM_IPSUM" > "$filename"
   done
 
   # Add, commit, and push the changes
   git add .
   git commit -m "Added $x files with patterned names"
-  git push -u origin ${x}-files
+  git push -u origin "$branch_name"
 
   # Checkout main to prepare for the next iteration
   git checkout main
 done
-
