@@ -7,7 +7,7 @@ LOREM_IPSUM="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
 git checkout main
 
 # Loop to create a varying number of files (95 to 100)
-for num_files in {95..100}; do
+for num_files in {85..95}; do
   branch_name="files-${num_files}"
   # Create and checkout new branch named according to the number of files
   git checkout -b "$branch_name"
